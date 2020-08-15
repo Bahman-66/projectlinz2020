@@ -1,6 +1,5 @@
 package at.projectlinz.tests;
 
-import javax.naming.directory.InvalidAttributeValueException;
 
 import org.junit.Test;
 
@@ -13,8 +12,8 @@ public class TestMotorHandler {
 	public void testMotorToBeActivatedAndStopedAfterFiveSecond() {
 
 		try {
-			MotorHandler.handel(new MockMotor());
-		} catch (InvalidAttributeValueException e) {
+			MotorHandler.handle(new MockMotor());
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

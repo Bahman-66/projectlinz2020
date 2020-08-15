@@ -4,8 +4,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.naming.directory.InvalidAttributeValueException;
-
 import org.apache.log4j.Logger;
 
 import at.projectlinz.hardware.Motor;
@@ -15,10 +13,10 @@ public class MotorHandler {
 	private static Logger log = Logger.getLogger(MotorHandler.class);
 	private final static ExecutorService service = Executors.newSingleThreadExecutor();
 
-	public static void handel(final Motor... motors) throws InvalidAttributeValueException {
+	public static void handle(final Motor... motors) {
 
 		if (motors.length == 0) {
-			throw new InvalidAttributeValueException("no motors is given to handle!");
+			throw new IllegalArgumentException("no motors is given to handle!");
 		}
 
 		service.submit(new Runnable() {
