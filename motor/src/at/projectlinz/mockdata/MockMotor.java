@@ -2,9 +2,9 @@ package at.projectlinz.mockdata;
 
 import org.apache.log4j.Logger;
 
-import at.projectlinz.hardware.Motor;
+import at.projectlinz.hardware.IMotor;
 
-public class MockMotor implements Motor {
+public class MockMotor implements IMotor {
 
 	private static Logger log = Logger.getLogger(MockMotor.class);
 

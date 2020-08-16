@@ -1,6 +1,6 @@
 package at.projectlinz.hardware;
 
-public interface Motor {
+public interface IMotor {
 	
 	public void  forward();
 	
