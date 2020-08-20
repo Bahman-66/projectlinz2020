@@ -22,15 +22,17 @@ public class App {
 			public void onFetchSampleTouchSensor() {
 				int sampleSize = t.sampleSize();
 				float[] sample = new float[sampleSize];
+				log.info("value before sampling: "+ sample[0]);
 				while (sample[0] == 0f) {
 					t.fetchSample(sample, 0);
-					log.info("sample value: "+ sample[0]);
 				}
+				log.info("value after sampling: "+ sample[0]);
 
 			}
 		});
 
 		MotorHandler.handle(new BigMotor('B', 500), new BigMotor('A', 500));
+		log.info("ends app!");
 	}
 
 }
