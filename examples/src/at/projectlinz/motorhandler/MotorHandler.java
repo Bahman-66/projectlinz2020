@@ -2,15 +2,16 @@ package at.projectlinz.motorhandler;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
 import at.projectlinz.hardware.IMotor;
+import at.projectlinz.hardware.TouchSensorListener;
 
 public class MotorHandler {
 
 	private static Logger log = Logger.getLogger(MotorHandler.class.toString());
+	private static TouchSensorListener touchSensorListener;
 	private final static ExecutorService service = Executors.newSingleThreadExecutor();
 
 	public static void handle(final IMotor... motors) {
@@ -26,20 +27,16 @@ public class MotorHandler {
 				for (IMotor motor : motors) {
 					motor.forward();
 				}
+				touchSensorListener.onFetchSampleTouchSensor();
+				service.shutdown();
 			}
 		});
 
-		try {
-			if (!service.awaitTermination(5, TimeUnit.SECONDS)) {
-				for (IMotor motor : motors) {
-					motor.stop();
-				}
-				service.shutdown();
-			}
-		} catch (InterruptedException e) {
-			log.error("motor thread is interrupted");
-			e.printStackTrace();
-		}
+	}
+
+	public static void setTouchSensorListener(TouchSensorListener onTouchListener) {
+		log.info("sensor listener seted");
+		MotorHandler.touchSensorListener = onTouchListener;
 	}
 
 }

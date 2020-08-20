@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import lejos.hardware.motor.Motor;
 
+
 public class BigMotor implements IMotor {
 
 	private char port;
