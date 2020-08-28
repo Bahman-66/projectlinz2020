@@ -46,6 +46,26 @@ public class BigMotor implements IMotor {
 
 	@Override
 	public void stop() {
+		switch (this.port) {
+		case 'A':
+			log.info("motor A stop");
+			Motor.A.stop();
+			break;
+		case 'B':
+			log.info("motor B stop");
+			Motor.B.stop();
+			break;
+		case 'C':
+			log.info("motor C stop");
+			Motor.C.stop();
+			break;
+		case 'D':
+			log.info("motor D stop");
+			Motor.D.stop();
+			break;
+		default:
+			break;
+		}
 		log.info("stop motor");
 	}
 
