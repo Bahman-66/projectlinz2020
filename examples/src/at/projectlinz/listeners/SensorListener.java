@@ -1,6 +1,6 @@
 package at.projectlinz.listeners;
 
-import at.projectlinz.events.Control;
+import at.projectlinz.controls.Control;
 
 public interface SensorListener {
 

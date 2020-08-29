@@ -1,4 +1,4 @@
-package at.projectlinz.events;
+package at.projectlinz.controls;
 
 import java.util.concurrent.ExecutorService;
 

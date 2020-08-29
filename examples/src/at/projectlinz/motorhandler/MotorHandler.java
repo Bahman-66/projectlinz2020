@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import at.projectlinz.events.Control;
+import at.projectlinz.controls.Control;
 import at.projectlinz.hardware.IMotor;
 import at.projectlinz.listeners.SensorListener;
 

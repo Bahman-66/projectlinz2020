@@ -3,7 +3,7 @@ package at.projectlinz.listeners;
 
 import org.apache.log4j.Logger;
 
-import at.projectlinz.events.Control;
+import at.projectlinz.controls.Control;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 public class UltrasonicSensorListener implements SensorListener {
