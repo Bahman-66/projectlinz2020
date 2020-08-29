@@ -1,5 +1,6 @@
 package at.projectlinz.listeners;
 
+
 import org.apache.log4j.Logger;
 
 import at.projectlinz.controls.Control;
@@ -18,6 +19,14 @@ public class TouchSensorListenner implements SensorListener {
 
 	@Override
 	public void onSensorSampling() {
+		
+		if(control == null) {
+			throw new IllegalArgumentException("no controler is registered!");
+		}
+		
+		if(touth == null) {
+			throw new IllegalArgumentException("no sensor is seted!");
+		}
 
 		int sampleSize = touth.sampleSize();
 		float[] sample = new float[sampleSize];

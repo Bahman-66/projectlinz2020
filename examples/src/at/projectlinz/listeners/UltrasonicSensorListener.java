@@ -18,6 +18,15 @@ public class UltrasonicSensorListener implements SensorListener {
 
 	@Override
 	public void onSensorSampling() {
+		
+		if(control == null) {
+			throw new IllegalArgumentException("no controler is registered!");
+		}
+		
+		if(ulSensor == null) {
+			throw new IllegalArgumentException("no sensor is seted!");
+		}
+		
 		float[] sample = new float[ulSensor.sampleSize()];
 		ulSensor.fetchSample(sample, 0);
 		while (sample[0] > threshold && !this.control.getExecuter().isShutdown()) {
