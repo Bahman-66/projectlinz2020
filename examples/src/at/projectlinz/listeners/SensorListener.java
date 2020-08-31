@@ -1,13 +1,37 @@
 package at.projectlinz.listeners;
 
+import org.apache.log4j.Logger;
+
 import at.projectlinz.controls.Control;
 
-public interface SensorListener {
+public abstract class SensorListener implements ISensorListener{
+	@SuppressWarnings("unused")
+	private Logger log = Logger.getLogger(SensorListener.class);
+	private Control control = null;
+	private boolean isSampling = false;
+	
+	public SensorListener(Object sensor) {
+		setSensor(sensor);
+	}
 
-	public void onSensorSampling();
+	@Override
+	public void setControl(Control control) {
+		this.control = control;
+	}
+	
+	@Override
+	public Control getControl() {
+		return control;
+	}
 
-	public void setSensor(Object sensor);
+	@Override
+	public boolean isSampling() {
+		return isSampling;
+	}
 
-	public void registerControl(Control event);
+	@Override
+	public void setSampling(boolean isSampling) {
+		this.isSampling = isSampling;
+	}
 
 }

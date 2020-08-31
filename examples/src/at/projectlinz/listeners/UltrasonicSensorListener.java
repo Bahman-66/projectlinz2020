@@ -1,44 +1,46 @@
 package at.projectlinz.listeners;
 
-
 import org.apache.log4j.Logger;
 
-import at.projectlinz.controls.Control;
+import at.projectlinz.listeners.events.MotorEvent;
+import at.projectlinz.listeners.events.MoveDirection;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
-public class UltrasonicSensorListener implements SensorListener {
+public class UltrasonicSensorListener extends SensorListener {
 	private Logger log = Logger.getLogger(UltrasonicSensorListener.class);
 	private float threshold = 0.1f;
-	private Control control = null;
 	private EV3UltrasonicSensor ulSensor;
 
 	public UltrasonicSensorListener(Object sensor) {
-		setSensor(sensor);
+		super(sensor);
 	}
 
 	@Override
 	public void onSensorSampling() {
-		
-		if(control == null) {
+		if (getControl() == null) {
 			throw new IllegalArgumentException("no controler is registered!");
 		}
-		
-		if(ulSensor == null) {
+
+		if (ulSensor == null) {
 			throw new IllegalArgumentException("no sensor is seted!");
 		}
-		
+
 		float[] sample = new float[ulSensor.sampleSize()];
 		ulSensor.fetchSample(sample, 0);
-		while (sample[0] > threshold && !this.control.getExecuter().isShutdown()) {
+		log.info("ulSesnsor start at " + sample[0]);
+		while (sample[0] > threshold) {
+			setSampling(true);
 			ulSensor.fetchSample(sample, 0);
 		}
+		setSampling(false);
 		log.info("ulSesnsor stop at " + sample[0]);
-		this.control.getExecuter().shutdown();
-	}
+		if (sample[0] < threshold) {
+			MotorEvent event = new MotorEvent(this);
+			event.setDirection(MoveDirection.RIGHT);
+			getControl().sendEvent(event);
+		}
+		log.info("done");
 
-	@Override
-	public void registerControl(Control event) {
-		this.control = event;
 	}
 
 	@Override

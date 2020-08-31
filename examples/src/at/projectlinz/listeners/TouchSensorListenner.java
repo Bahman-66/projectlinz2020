@@ -1,51 +1,48 @@
 package at.projectlinz.listeners;
 
-
 import org.apache.log4j.Logger;
 
-import at.projectlinz.controls.Control;
-import at.projectlinz.motorhandler.MotorHandler;
+import at.projectlinz.listeners.events.SensorEvent;
 import lejos.hardware.sensor.EV3TouchSensor;
 
-public class TouchSensorListenner implements SensorListener {
+public class TouchSensorListenner extends SensorListener {
 
-	private Logger log = Logger.getLogger(MotorHandler.class.toString());
-	private Control control = null;
+	private Logger log = Logger.getLogger(TouchSensorListenner.class);
 	private EV3TouchSensor touth;
 
 	public TouchSensorListenner(Object sensor) {
-		setSensor(sensor);
+		super(sensor);
 	}
 
 	@Override
 	public void onSensorSampling() {
-		
-		if(control == null) {
+
+		if (getControl() == null) {
 			throw new IllegalArgumentException("no controler is registered!");
 		}
-		
-		if(touth == null) {
+
+		if (touth == null) {
 			throw new IllegalArgumentException("no sensor is seted!");
 		}
 
 		int sampleSize = touth.sampleSize();
 		float[] sample = new float[sampleSize];
 		log.info("value before sampling: " + sample[0]);
-		while (sample[0] == 0f && !control.getExecuter().isShutdown()) {
+		while (sample[0] == 0f) {
+			setSampling(true);
 			touth.fetchSample(sample, 0);
 		}
+		setSampling(false);
 		log.info("value after sampling: " + sample[0]);
-		this.control.getExecuter().shutdown();
+		if (sample[0] == 1f) {
+			getControl().sendEvent(new SensorEvent(TouchSensorListenner.this));
+		}
+
 	}
 
 	@Override
 	public void setSensor(Object sensor) {
 		this.touth = (EV3TouchSensor) sensor;
-	}
-
-	@Override
-	public void registerControl(Control control) {
-		this.control = control;
 	}
 
 }
