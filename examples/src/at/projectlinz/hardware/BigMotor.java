@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 
 import lejos.hardware.motor.Motor;
 
-
 public class BigMotor implements IMotor {
 
 	private char port;
@@ -66,7 +65,35 @@ public class BigMotor implements IMotor {
 		default:
 			break;
 		}
-		log.info("stop motor");
+	}
+
+	@Override
+	public void backward() {
+		switch (this.port) {
+		case 'A':
+			log.info("motor A move backward");
+			Motor.A.setSpeed(speed);
+			Motor.A.backward();
+			break;
+		case 'B':
+			log.info("motor B move backward");
+			Motor.B.setSpeed(speed);
+			Motor.B.backward();
+			break;
+		case 'C':
+			log.info("motor C move backward");
+			Motor.C.setSpeed(speed);
+			Motor.C.backward();
+			break;
+		case 'D':
+			log.info("motor D move backward");
+			Motor.D.setSpeed(speed);
+			Motor.D.backward();
+			break;
+		default:
+			break;
+		}
+
 	}
 
 }
