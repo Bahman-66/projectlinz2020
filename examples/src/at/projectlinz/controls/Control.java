@@ -1,25 +1,30 @@
 package at.projectlinz.controls;
 
-import java.util.concurrent.ExecutorService;
+import java.util.Map;
 
 import at.projectlinz.hardware.IMotor;
+import at.projectlinz.listeners.events.Event;
+import at.projectlinz.motorhandler.MotorHandler;
 
 public class Control {
 
-	private ExecutorService e;
-	private IMotor[] m;
+	private MotorHandler handler;
 
-	public Control(IMotor[] motors, ExecutorService service) {
-		this.m = motors;
-		this.e = service;
+	public Control(MotorHandler motorHandler) {
+		this.handler = motorHandler;
 	}
 
-	public ExecutorService getExecuter() {
-		return e;
+	public Map<String, IMotor> getMotors() {
+		return this.handler.getRobot().getMotors();
 	}
 
-	public IMotor[] getMotors() {
-		return m;
+	public void sendEvent(Event event) {
+		try {
+			handler.updateMotor(event);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }
