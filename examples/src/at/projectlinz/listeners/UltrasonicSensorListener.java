@@ -8,7 +8,7 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 public class UltrasonicSensorListener extends SensorListener {
 	private Logger log = Logger.getLogger(UltrasonicSensorListener.class);
-	private float threshold = 0.1f;
+	private float threshold = 0.15f;
 	private EV3UltrasonicSensor ulSensor;
 
 	public UltrasonicSensorListener(Object sensor) {

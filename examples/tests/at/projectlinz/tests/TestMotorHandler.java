@@ -3,7 +3,6 @@ package at.projectlinz.tests;
 
 import org.junit.Test;
 
-import at.projectlinz.mockdata.MockMotor;
 import at.projectlinz.motorhandler.MotorHandler;
 
 public class TestMotorHandler {
@@ -14,7 +13,7 @@ public class TestMotorHandler {
 	public void testMotorToBeActivatedAndStopedAfterFiveSecond() {
 
 		try {
-			handler.handle(new MockMotor());
+			handler.handle();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

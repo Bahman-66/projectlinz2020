@@ -18,4 +18,16 @@ public class MockMotor implements IMotor {
 		log.info("stop motor");
 	}
 
+	@Override
+	public void setSpeed(int speed) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void backward() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

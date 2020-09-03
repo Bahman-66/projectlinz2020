@@ -75,6 +75,7 @@ public class MotorHandler {
 			for (IMotor m : event.getControl().getMotors().values()) {
 				m.stop();
 			}
+			log.info(pool.shutdownNow());
 		} else if (event instanceof MotorEvent) {
 			log.info("motor events arrived");
 			switch (((MotorEvent) event).getDirection()) {
@@ -111,7 +112,7 @@ public class MotorHandler {
 		for (final String key : sensorListener.keySet()) {
 			log.info("execution of sampling sensor " + key + " is " + sensorListener.get(key).isSampling());
 
-			if (!sensorListener.get(key).isSampling()) {
+			if (!sensorListener.get(key).isSampling() && !pool.isShutdown()) {
 				log.info("execute " + key);
 				pool.execute(new Runnable() {
 
