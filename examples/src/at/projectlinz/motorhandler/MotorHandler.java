@@ -25,7 +25,7 @@ public class MotorHandler {
 
 	private static Logger log = Logger.getLogger(MotorHandler.class.toString());
 	private Control control;
-	private ExecutorService pool = Executors.newCachedThreadPool();
+	private ExecutorService pool = Executors.newScheduledThreadPool(2);
 	private Map<String, ISensorListener> sensorListener = new HashMap<>();
 	private Robot robot;
 
@@ -70,30 +70,41 @@ public class MotorHandler {
 		this.robot = robot;
 	}
 
+	public Control getControl() {
+		return this.control;
+	}
+
 	public void updateMotor(final Event event) throws Exception {
 		if (event instanceof SensorEvent) {
 			for (IMotor m : event.getControl().getMotors().values()) {
 				m.stop();
 			}
 			log.info(pool.shutdownNow());
+			System.exit(0);
 		} else if (event instanceof MotorEvent) {
+			MotorEvent newEvent = new MotorEvent(event.getListener());
 			log.info("motor events arrived");
 			switch (((MotorEvent) event).getDirection()) {
 			case FORWARD:
-				execute();
-				for (IMotor m : event.getControl().getMotors().values()) {
-					m.setSpeed(50);
-					m.forward();
-				}
+				executeSampling();
+				activateMotorsForward(event);
 				break;
 			case RIGHT:
 				log.info("move right");
 				log.info("ulsensor is " + sensorListener.get("ulsensor").isSampling());
-				execute();
 				event.getControl().getMotors().get("right").stop();
-				event.getControl().getMotors().get("left").setSpeed(10);
+				event.getControl().getMotors().get("left").setSpeed(100);
 				event.getControl().getMotors().get("left").forward();
-				MotorEvent newEvent = new MotorEvent(event.getListener());
+				newEvent.setDirection(MoveDirection.FORWARD);
+				updateMotor(newEvent);
+				break;
+			case LEFT:
+				log.info("move left");
+				log.info("ulsensor is " + sensorListener.get("ulsensor").isSampling());
+				event.getControl().getMotors().get("left").stop();
+				event.getControl().getMotors().get("right").setSpeed(100);
+				event.getControl().getMotors().get("right").forward();
+				newEvent = new MotorEvent(event.getListener());
 				newEvent.setDirection(MoveDirection.FORWARD);
 				updateMotor(newEvent);
 				break;
@@ -104,11 +115,15 @@ public class MotorHandler {
 		}
 	}
 
-	public Control getControl() {
-		return this.control;
+	private void activateMotorsForward(final Event event) {
+		for (IMotor m : event.getControl().getMotors().values()) {
+			m.setSpeed(30);
+			m.forward();
+		}
+
 	}
 
-	private void execute() {
+	private void executeSampling() {
 		for (final String key : sensorListener.keySet()) {
 			log.info("execution of sampling sensor " + key + " is " + sensorListener.get(key).isSampling());
 

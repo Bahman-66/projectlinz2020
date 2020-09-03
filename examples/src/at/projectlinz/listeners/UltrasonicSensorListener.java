@@ -10,6 +10,7 @@ public class UltrasonicSensorListener extends SensorListener {
 	private Logger log = Logger.getLogger(UltrasonicSensorListener.class);
 	private float threshold = 0.15f;
 	private EV3UltrasonicSensor ulSensor;
+	private MoveDirection lastMove = MoveDirection.FORWARD;
 
 	public UltrasonicSensorListener(Object sensor) {
 		super(sensor);
@@ -35,9 +36,7 @@ public class UltrasonicSensorListener extends SensorListener {
 		setSampling(false);
 		log.info("ulSesnsor stop at " + sample[0]);
 		if (sample[0] < threshold) {
-			MotorEvent event = new MotorEvent(this);
-			event.setDirection(MoveDirection.RIGHT);
-			getControl().sendEvent(event);
+			dispatchEvent();
 		}
 		log.info("done");
 
@@ -50,6 +49,31 @@ public class UltrasonicSensorListener extends SensorListener {
 
 	public void setThreshold(float threshold) {
 		this.threshold = threshold;
+	}
+
+	private void dispatchEvent() {
+		MotorEvent event = new MotorEvent(this);
+		switch (lastMove) {
+		case FORWARD:
+			event.setDirection(MoveDirection.RIGHT);
+			lastMove = MoveDirection.RIGHT;
+			getControl().sendEvent(event);
+			break;
+		case RIGHT:
+			event.setDirection(MoveDirection.LEFT);
+			lastMove = MoveDirection.LEFT;
+			getControl().sendEvent(event);
+			break;
+		case LEFT:
+			event.setDirection(MoveDirection.FORWARD);
+			lastMove = MoveDirection.FORWARD;
+			getControl().sendEvent(event);
+			break;
+
+		default:
+			break;
+		}
+
 	}
 
 }

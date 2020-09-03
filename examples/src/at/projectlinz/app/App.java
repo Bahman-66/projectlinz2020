@@ -15,21 +15,23 @@ public class App {
 
 	public static void main(String[] args) {
 		log.info("start app!");
+		try {
+			MotorHandler handler = new MotorHandler();
+			EV3UltrasonicSensor ulSensor = new EV3UltrasonicSensor(SensorPort.S2);
+			EV3TouchSensor touchSensor = new EV3TouchSensor(SensorPort.S1);
+			BigMotor leftMotor = new BigMotor('A', 50);
+			BigMotor rightMotor = new BigMotor('B', 50);
+			Robot r = new Robot();
+			r.addSensors("ulsensor", ulSensor);
+			r.addSensors("touchsensor", touchSensor);
+			r.addMotors("left", leftMotor);
+			r.addMotors("right", rightMotor);
+			handler.setRobot(r);
 
-		MotorHandler handler = new MotorHandler();
-		EV3UltrasonicSensor ulSensor = new EV3UltrasonicSensor(SensorPort.S2);
-		EV3TouchSensor touchSensor = new EV3TouchSensor(SensorPort.S1);
-		BigMotor leftMotor = new BigMotor('A', 50);
-		BigMotor rightMotor = new BigMotor('B', 50);
-		Robot r = new Robot();
-		r.addSensors("ulsensor", ulSensor);
-		r.addSensors("touchsensor", touchSensor);
-		r.addMotors("left", leftMotor);
-		r.addMotors("right", rightMotor);
-		handler.setRobot(r);
-
-		handler.handle();
-
+			handler.handle();
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
 		log.info("ends app!");
 	}
 
