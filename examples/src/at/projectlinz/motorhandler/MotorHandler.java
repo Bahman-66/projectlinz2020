@@ -81,6 +81,7 @@ public class MotorHandler {
 			case FORWARD:
 				execute();
 				for (IMotor m : event.getControl().getMotors().values()) {
+					m.setSpeed(50);
 					m.forward();
 				}
 				break;
@@ -89,6 +90,8 @@ public class MotorHandler {
 				log.info("ulsensor is " + sensorListener.get("ulsensor").isSampling());
 				execute();
 				event.getControl().getMotors().get("right").stop();
+				event.getControl().getMotors().get("left").setSpeed(10);
+				event.getControl().getMotors().get("left").forward();
 				MotorEvent newEvent = new MotorEvent(event.getListener());
 				newEvent.setDirection(MoveDirection.FORWARD);
 				updateMotor(newEvent);
@@ -107,8 +110,9 @@ public class MotorHandler {
 	private void execute() {
 		for (final String key : sensorListener.keySet()) {
 			log.info("execution of sampling sensor " + key + " is " + sensorListener.get(key).isSampling());
-			log.info("execute " + key);
+
 			if (!sensorListener.get(key).isSampling()) {
+				log.info("execute " + key);
 				pool.execute(new Runnable() {
 
 					@Override

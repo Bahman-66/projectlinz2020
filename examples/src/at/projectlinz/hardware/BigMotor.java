@@ -8,10 +8,16 @@ public class BigMotor implements IMotor {
 
 	private char port;
 	private int speed;
+	
+
 	private static Logger log = Logger.getLogger(BigMotor.class);
 
 	public BigMotor(char port, int speed) {
 		this.port = port;
+		this.speed = speed;
+	}
+	
+	public void setSpeed(int speed) {
 		this.speed = speed;
 	}
 
