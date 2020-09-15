@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Robot {
-	Map<String, Object> sensors;
+	Map<Sensor, Object> sensors;
 	Map<String, IMotor> motors;
 
 	public Robot() {
@@ -12,11 +12,11 @@ public class Robot {
 		motors = new HashMap<>();
 	}
 
-	public void addSensors(String key, Object obj) {
+	public void addSensors(Sensor key, Object obj) {
 		sensors.put(key, obj);
 	}
 
-	public Object getSensor(String key) {
+	public Object getSensor(Sensor key) {
 		return sensors.get(key);
 	}
 

@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import at.projectlinz.controls.Control;
 import at.projectlinz.hardware.IMotor;
 import at.projectlinz.hardware.Robot;
+import at.projectlinz.hardware.Sensor;
 import at.projectlinz.listeners.ISensorListener;
 import at.projectlinz.listeners.TouchSensorListenner;
 import at.projectlinz.listeners.UltrasonicSensorListener;
@@ -26,28 +27,24 @@ public class MotorHandler {
 	private static Logger log = Logger.getLogger(MotorHandler.class.toString());
 	private Control control;
 	private ExecutorService pool = Executors.newScheduledThreadPool(2);
-	private Map<String, ISensorListener> sensorListener = new HashMap<>();
+	private Map<Sensor, ISensorListener> sensorListener = new HashMap<>();
 	private Robot robot;
 
-	public void handle() {
+	public void handle() throws Exception {
 		if (robot.numberOfMotors() == 0) {
 			throw new IllegalArgumentException("no motors is given to handle!");
 		}
-		try {
 			control = new Control(this);
-			addSensorListener("ulsensor",
-					new UltrasonicSensorListener((EV3UltrasonicSensor) robot.getSensor("ulsensor")));
-			addSensorListener("touchsensor", new TouchSensorListenner((EV3TouchSensor) robot.getSensor("touchsensor")));
+			addSensorListener(Sensor.ULTRASONIC,
+					new UltrasonicSensorListener((EV3UltrasonicSensor) robot.getSensor(Sensor.ULTRASONIC)));
+			addSensorListener(Sensor.TOUCHSENSOR, new TouchSensorListenner((EV3TouchSensor) robot.getSensor(Sensor.TOUCHSENSOR)));
 			registerControl(control);
 			MotorEvent event = new MotorEvent(control);
 			event.setDirection(MoveDirection.FORWARD);
 			updateMotor(event);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
 	}
 
-	public void addSensorListener(String key, final ISensorListener listener) {
+	public void addSensorListener(Sensor key, final ISensorListener listener) {
 		log.info("sensor listener seted");
 		sensorListener.put(key, listener);
 	}
@@ -91,18 +88,18 @@ public class MotorHandler {
 				break;
 			case RIGHT:
 				log.info("move right");
-				log.info("ulsensor is " + sensorListener.get("ulsensor").isSampling());
+				log.info("ulsensor is " + sensorListener.get(Sensor.ULTRASONIC).isSampling());
 				event.getControl().getMotors().get("right").stop();
-				event.getControl().getMotors().get("left").setSpeed(100);
+				event.getControl().getMotors().get("left").setSpeed(200);
 				event.getControl().getMotors().get("left").forward();
 				newEvent.setDirection(MoveDirection.FORWARD);
 				updateMotor(newEvent);
 				break;
 			case LEFT:
 				log.info("move left");
-				log.info("ulsensor is " + sensorListener.get("ulsensor").isSampling());
+				log.info("ulsensor is " + sensorListener.get(Sensor.ULTRASONIC).isSampling());
 				event.getControl().getMotors().get("left").stop();
-				event.getControl().getMotors().get("right").setSpeed(100);
+				event.getControl().getMotors().get("right").setSpeed(200);
 				event.getControl().getMotors().get("right").forward();
 				newEvent = new MotorEvent(event.getListener());
 				newEvent.setDirection(MoveDirection.FORWARD);
@@ -124,7 +121,7 @@ public class MotorHandler {
 	}
 
 	private void executeSampling() {
-		for (final String key : sensorListener.keySet()) {
+		for (final Sensor key : sensorListener.keySet()) {
 			log.info("execution of sampling sensor " + key + " is " + sensorListener.get(key).isSampling());
 
 			if (!sensorListener.get(key).isSampling() && !pool.isShutdown()) {
