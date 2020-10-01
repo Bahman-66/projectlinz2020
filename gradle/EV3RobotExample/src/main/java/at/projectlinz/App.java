@@ -2,14 +2,11 @@ package at.projectlinz;
 
 import org.apache.log4j.Logger;
 
-import com.github.oxo42.stateless4j.StateMachine;
 
 import at.projectlinz.hardware.BigMotor;
 import at.projectlinz.hardware.Robot;
 import at.projectlinz.motorhandler.MotorHandler;
 import at.projectlinz.statemachine.RobotStateMachineConfig;
-import at.projectlinz.statemachine.RobotStateMachineConfig.State;
-import at.projectlinz.statemachine.RobotStateMachineConfig.Trigger;
 import ev3dev.sensors.ev3.EV3TouchSensor;
 import ev3dev.sensors.ev3.EV3UltrasonicSensor;
 import lejos.hardware.port.SensorPort;
@@ -33,13 +30,9 @@ public class App {
 			r.addMotors("left", leftMotor);
 			r.addMotors("right", rightMotor);
 			handler.setRobot(r);
-
+			handler.setStateMachine(RobotStateMachineConfig.getRobotStateMachine(handler.getControl()));
 			handler.handle();
-			
-			StateMachine<State , Trigger> fsm = RobotStateMachineConfig.getRobotStateMachine();
-			fsm.fire(Trigger.FORWARD);
-			
-			
+					
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}

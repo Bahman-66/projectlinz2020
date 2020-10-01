@@ -2,7 +2,8 @@ package at.projectlinz.listeners;
 
 import org.apache.log4j.Logger;
 
-import at.projectlinz.listeners.events.SensorEvent;
+import at.projectlinz.listeners.events.MotorEvent;
+import at.projectlinz.statemachine.RobotStateMachineConfig.Trigger;
 import ev3dev.sensors.ev3.EV3TouchSensor;
 
 public class TouchSensorListenner extends SensorListener {
@@ -35,7 +36,7 @@ public class TouchSensorListenner extends SensorListener {
 		setSampling(false);
 		log.info("value after sampling: " + sample[0]);
 		if (sample[0] == 1f) {
-			getControl().sendEvent(new SensorEvent(TouchSensorListenner.this));
+			dispatchEvent();
 		}
 
 	}
@@ -43,6 +44,12 @@ public class TouchSensorListenner extends SensorListener {
 	@Override
 	public void setSensor(Object sensor) {
 		this.touth = (EV3TouchSensor) sensor;
+	}
+	
+	private void dispatchEvent() {
+		MotorEvent event = new MotorEvent(this);
+		event.setType(Trigger.BLOCK);
+		getControl().sendEvent(event);
 	}
 
 }

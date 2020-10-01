@@ -24,7 +24,23 @@ public class Control {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+	}
+	
+	public void sampling() {
+		handler.executeSampling();
 	}
 
+	public void moveForward() {
+		handler.activateMotorsForward();
+	}
+
+	public void navigate() {
+		handler.navigate();
+		
+	}
+
+	public void stop() {
+		handler.stopMotor();
+		
+	}
 }

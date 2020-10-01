@@ -3,14 +3,13 @@ package at.projectlinz.listeners;
 import org.apache.log4j.Logger;
 
 import at.projectlinz.listeners.events.MotorEvent;
-import at.projectlinz.listeners.events.MoveDirection;
+import at.projectlinz.statemachine.RobotStateMachineConfig.Trigger;
 import ev3dev.sensors.ev3.EV3UltrasonicSensor;
 
 public class UltrasonicSensorListener extends SensorListener {
 	private Logger log = Logger.getLogger(UltrasonicSensorListener.class);
 	private float threshold = 0.15f;
 	private EV3UltrasonicSensor ulSensor;
-	private MoveDirection lastMove = MoveDirection.FORWARD;
 
 	public UltrasonicSensorListener(Object sensor) {
 		super(sensor);
@@ -53,27 +52,8 @@ public class UltrasonicSensorListener extends SensorListener {
 
 	private void dispatchEvent() {
 		MotorEvent event = new MotorEvent(this);
-		switch (lastMove) {
-		case FORWARD:
-			event.setDirection(MoveDirection.RIGHT);
-			lastMove = MoveDirection.RIGHT;
-			getControl().sendEvent(event);
-			break;
-		case RIGHT:
-			event.setDirection(MoveDirection.LEFT);
-			lastMove = MoveDirection.LEFT;
-			getControl().sendEvent(event);
-			break;
-		case LEFT:
-			event.setDirection(MoveDirection.FORWARD);
-			lastMove = MoveDirection.FORWARD;
-			getControl().sendEvent(event);
-			break;
-
-		default:
-			break;
-		}
-
+		event.setType(Trigger.BLOCK);
+		getControl().sendEvent(event);
 	}
 
 }
