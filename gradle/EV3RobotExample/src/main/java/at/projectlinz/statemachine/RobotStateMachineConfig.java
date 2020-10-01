@@ -35,7 +35,6 @@ public class RobotStateMachineConfig {
 			@Override
 			public void execute() {
 				log.info("do IDLE");
-				System.out.println("do IDLE");
 			}
 		};
 		
@@ -44,7 +43,6 @@ public class RobotStateMachineConfig {
 			@Override
 			public void execute() {
 				log.info("do MOVE");
-				System.out.println("do MOVE");
 			}
 		}; 
 		
@@ -53,17 +51,17 @@ public class RobotStateMachineConfig {
 			@Override
 			public void execute() {
 				log.info("do SAMPLE");
-				System.out.println("do SAMPLE");
 			}
 		};
 		
+		config.enableEntryActionOfInitialState();
 		
 		config.configure(State.IDLE)
 			.onEntry(createAction(doIdle))
 			.onExit(createAction(move))
 			.permit(Trigger.FORWARD, State.MOVING,createAction(sample));
 		
-		return new StateMachine<>(State.IDLE, config);
+		return new StateMachine<State  ,Trigger>(State.IDLE, config);
 	}
 	
 	
