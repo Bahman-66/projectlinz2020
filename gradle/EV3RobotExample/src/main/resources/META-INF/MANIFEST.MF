@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-Title: EV3RobotExample
+Implementation-Version: 2.7.0-SNAPSHOT
+Implementation-Vendor: Bahman Bahman-Zangi
+Main-Class: at.projectlinz.App

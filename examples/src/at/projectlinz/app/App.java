@@ -2,6 +2,7 @@ package at.projectlinz.app;
 
 import org.apache.log4j.Logger;
 
+
 import at.projectlinz.hardware.BigMotor;
 import at.projectlinz.hardware.Robot;
 import at.projectlinz.motorhandler.MotorHandler;
@@ -29,6 +30,8 @@ public class App {
 			handler.setRobot(r);
 
 			handler.handle();
+			
+			
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
