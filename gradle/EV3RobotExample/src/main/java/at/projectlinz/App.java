@@ -5,7 +5,11 @@ import org.apache.log4j.Logger;
 import com.github.oxo42.stateless4j.StateMachine;
 
 import at.projectlinz.hardware.BigMotor;
+import at.projectlinz.hardware.BigMotor.MotorPos;
 import at.projectlinz.hardware.Robot;
+import at.projectlinz.listeners.TouchSensorListenner;
+import at.projectlinz.listeners.UltrasonicSensorListener;
+import at.projectlinz.listeners.SensorListener.Sensor;
 import at.projectlinz.motorhandler.MotorHandler;
 import at.projectlinz.statemachine.RobotStateMachineConfig;
 import at.projectlinz.statemachine.RobotStateMachineConfig.State;
@@ -13,7 +17,6 @@ import at.projectlinz.statemachine.RobotStateMachineConfig.Trigger;
 import ev3dev.sensors.ev3.EV3TouchSensor;
 import ev3dev.sensors.ev3.EV3UltrasonicSensor;
 import lejos.hardware.port.SensorPort;
-
 
 public class App {
 
@@ -25,21 +28,19 @@ public class App {
 			MotorHandler handler = new MotorHandler();
 			EV3UltrasonicSensor ulSensor = new EV3UltrasonicSensor(SensorPort.S2);
 			EV3TouchSensor touchSensor = new EV3TouchSensor(SensorPort.S1);
+			StateMachine<State, Trigger> fsm = RobotStateMachineConfig.getRobotStateMachine(handler.getControl());
 			BigMotor leftMotor = new BigMotor('A', 50);
 			BigMotor rightMotor = new BigMotor('B', 50);
 			Robot r = new Robot();
-			r.addSensors("ulsensor", ulSensor);
-			r.addSensors("touchsensor", touchSensor);
-			r.addMotors("left", leftMotor);
-			r.addMotors("right", rightMotor);
+			r.addSensors(Sensor.ULTRASONIC, ulSensor);
+			r.addSensors(Sensor.TOUCH, touchSensor);
+			r.addMotors(MotorPos.LEFT_MOTOR, leftMotor);
+			r.addMotors(MotorPos.RIGTH_MOTOR, rightMotor);
 			handler.setRobot(r);
-
-			handler.handle();
-			
-			StateMachine<State , Trigger> fsm = RobotStateMachineConfig.getRobotStateMachine();
-			fsm.fire(Trigger.FORWARD);
-			
-			
+			handler.addSensorListener(Sensor.ULTRASONIC, new UltrasonicSensorListener(ulSensor));
+			handler.addSensorListener(Sensor.TOUCH, new TouchSensorListenner(touchSensor));
+			handler.registerControl();
+			handler.setStateMachine(fsm);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}

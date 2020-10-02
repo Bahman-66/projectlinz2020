@@ -5,6 +5,12 @@ import org.apache.log4j.Logger;
 import at.projectlinz.controls.Control;
 
 public abstract class SensorListener implements ISensorListener{
+	
+	public enum Sensor{
+		TOUCH,
+		ULTRASONIC
+	}
+	
 	@SuppressWarnings("unused")
 	private Logger log = Logger.getLogger(SensorListener.class);
 	private Control control = null;
