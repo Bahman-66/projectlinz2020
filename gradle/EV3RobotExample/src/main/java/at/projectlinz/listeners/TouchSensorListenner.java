@@ -47,8 +47,7 @@ public class TouchSensorListenner extends SensorListener {
 	}
 	
 	private void dispatchEvent() {
-		MotorEvent event = new MotorEvent(this);
-		event.setType(Trigger.BLOCK);
+		MotorEvent event = new MotorEvent(this,Trigger.STOP);
 		getControl().sendEvent(event);
 	}
 

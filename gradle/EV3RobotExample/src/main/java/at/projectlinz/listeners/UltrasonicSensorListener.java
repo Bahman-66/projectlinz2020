@@ -8,7 +8,7 @@ import ev3dev.sensors.ev3.EV3UltrasonicSensor;
 
 public class UltrasonicSensorListener extends SensorListener {
 	private Logger log = Logger.getLogger(UltrasonicSensorListener.class);
-	private float threshold = 0.15f;
+	private float threshold = 0.20f;
 	private EV3UltrasonicSensor ulSensor;
 
 	public UltrasonicSensorListener(Object sensor) {
@@ -51,8 +51,7 @@ public class UltrasonicSensorListener extends SensorListener {
 	}
 
 	private void dispatchEvent() {
-		MotorEvent event = new MotorEvent(this);
-		event.setType(Trigger.BLOCK);
+		MotorEvent event = new MotorEvent(this,Trigger.BLOCK);
 		getControl().sendEvent(event);
 	}
 

@@ -4,12 +4,14 @@ import org.apache.log4j.Logger;
 
 import ev3dev.actuators.lego.motors.Motor;
 
-
 public class BigMotor implements IMotor {
+
+	public enum MotorPos {
+		RIGTH_MOTOR, LEFT_MOTOR
+	}
 
 	private char port;
 	private int speed;
-	
 
 	private static Logger log = Logger.getLogger(BigMotor.class);
 
@@ -17,7 +19,7 @@ public class BigMotor implements IMotor {
 		this.port = port;
 		this.speed = speed;
 	}
-	
+
 	public void setSpeed(int speed) {
 		this.speed = speed;
 	}

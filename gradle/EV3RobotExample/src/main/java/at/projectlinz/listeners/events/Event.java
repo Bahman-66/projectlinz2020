@@ -8,12 +8,9 @@ public abstract class Event implements IEvent {
 	private int type;
 	private Object source;
 
-	public Event(Object source) {
+	public Event(Object source ,Trigger t) {
 		this.source = source;
-	}
-
-	public void setType(Trigger t) {
-		type = t.label;
+		this.type = t.label;
 	}
 
 	public int getType() {

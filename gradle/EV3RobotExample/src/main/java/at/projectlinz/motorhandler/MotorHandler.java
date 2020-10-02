@@ -12,54 +12,36 @@ import org.apache.log4j.Logger;
 import com.github.oxo42.stateless4j.StateMachine;
 
 import at.projectlinz.controls.Control;
+import at.projectlinz.hardware.BigMotor.MotorPos;
 import at.projectlinz.hardware.IMotor;
 import at.projectlinz.hardware.Robot;
 import at.projectlinz.listeners.ISensorListener;
-import at.projectlinz.listeners.TouchSensorListenner;
-import at.projectlinz.listeners.UltrasonicSensorListener;
+import at.projectlinz.listeners.SensorListener.Sensor;
 import at.projectlinz.listeners.events.Event;
 import at.projectlinz.statemachine.RobotStateMachineConfig.State;
 import at.projectlinz.statemachine.RobotStateMachineConfig.Trigger;
-import ev3dev.sensors.ev3.EV3TouchSensor;
-import ev3dev.sensors.ev3.EV3UltrasonicSensor;
 
 public class MotorHandler {
-	
-	private final Control control;
 	private static Logger log = Logger.getLogger(MotorHandler.class.toString());
-	private ExecutorService pool = Executors.newScheduledThreadPool(2);
-	private Map<String, ISensorListener> sensorListener = new HashMap<>();
+
 	private Robot robot;
+	private final Control control;
 	private StateMachine<State, Trigger> fsm;
-	
+	private ExecutorService pool = Executors.newScheduledThreadPool(2);
+	private Map<Sensor, ISensorListener> sensorListener = new HashMap<>();
+
 	public MotorHandler() {
 		control = new Control(this);
 	}
 
-	public void handle() {
-		if (robot.numberOfMotors() == 0) {
-			throw new IllegalArgumentException("no motors is given to handle!");
-		}
-		try {
-
-			addSensorListener("ulsensor",
-					new UltrasonicSensorListener((EV3UltrasonicSensor) robot.getSensor("ulsensor")));
-			addSensorListener("touchsensor", new TouchSensorListenner((EV3TouchSensor) robot.getSensor("touchsensor")));
-			registerControl(control);
-			fsm.fire(Trigger.FORWARD);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
-	}
-
-	public void addSensorListener(String key, final ISensorListener listener) {
+	public void addSensorListener(Sensor key, final ISensorListener listener) {
 		log.info("sensor listener seted");
 		sensorListener.put(key, listener);
 	}
 
-	public void registerControl(Control c) {
+	public void registerControl() {
 		for (ISensorListener l : sensorListener.values()) {
-			l.setControl(c);
+			l.setControl(control);
 		}
 	}
 
@@ -94,6 +76,9 @@ public class MotorHandler {
 		case 3:
 			fsm.fire(Trigger.RESET);
 			break;
+		case 4:
+			fsm.fire(Trigger.READY);
+			break;
 		default:
 			break;
 		}
@@ -109,7 +94,7 @@ public class MotorHandler {
 	}
 
 	public void executeSampling() {
-		for (final String key : sensorListener.keySet()) {
+		for (final Sensor key : sensorListener.keySet()) {
 			log.info("execution of sampling sensor " + key + " is " + sensorListener.get(key).isSampling());
 
 			if (!sensorListener.get(key).isSampling() && !pool.isShutdown()) {
@@ -128,14 +113,28 @@ public class MotorHandler {
 
 	public void setStateMachine(StateMachine<State, Trigger> robotStateMachine) {
 		this.fsm = robotStateMachine;
+		this.fsm.configuration().enableEntryActionOfInitialState();
+		this.fsm.fire(Trigger.FORWARD);
 	}
 
 	public void navigate() {
 		log.info("do NAVIGATE");
-		
+		getControl().getMotors().get(MotorPos.RIGTH_MOTOR).setSpeed(200);
+		getControl().getMotors().get(MotorPos.RIGTH_MOTOR).forward();
+		try {
+			Thread.sleep(2000);
+
+			getControl().getMotors().get(MotorPos.RIGTH_MOTOR).stop();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public void stopMotor() {
+		doStopMotor();
+	}
+
+	private void doStopMotor() {
 		for (IMotor m : getControl().getMotors().values()) {
 			m.stop();
 		}

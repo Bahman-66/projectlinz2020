@@ -7,6 +7,7 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import com.github.oxo42.stateless4j.delegates.Action;
 
 import at.projectlinz.controls.Control;
+import at.projectlinz.listeners.events.MotorEvent;
 
 public class RobotStateMachineConfig {
 
@@ -18,7 +19,7 @@ public class RobotStateMachineConfig {
 	}
 
 	public enum Trigger {
-		FORWARD(0), BLOCK(1), STOP(2), RESET(3);
+		FORWARD(0), BLOCK(1), STOP(2), RESET(3) , READY(4);
 
 		public final int label;
 
@@ -30,14 +31,7 @@ public class RobotStateMachineConfig {
 	public static StateMachine<State, Trigger> getRobotStateMachine(Control c) {
 		control = c;
 		StateMachineConfig<State, Trigger> config = new StateMachineConfig<>();
-		Command doIdle = new Command() {
-
-			@Override
-			public void execute() {
-				log.info("do IDLE");
-			}
-		};
-
+		
 		Command move = new Command() {
 
 			@Override
@@ -61,7 +55,7 @@ public class RobotStateMachineConfig {
 			@Override
 			public void execute() {
 				log.info("do Stop");
-				control.stop();
+				control.stopMotor();
 			}
 		};
 		
@@ -69,21 +63,80 @@ public class RobotStateMachineConfig {
 
 			@Override
 			public void execute() {
-				log.info("do Stop");
+				log.info("do Navigate");
 				control.navigate();
+				MotorEvent e = new MotorEvent(null, Trigger.RESET);
+				control.sendEvent(e);
 			}
 		};
+		
+		Command shutdown = new Command() {
 
-		config.enableEntryActionOfInitialState();
+			@Override
+			public void execute() {
+				log.info("do shutdown");
+				System.exit(0);
+			}
+		};
+		
+		Command reset = new Command() {
 
+			@Override
+			public void execute() {
+				log.info("do reset");
+				control.stopMotor();
+				MotorEvent e = new MotorEvent(this , Trigger.READY);
+				control.sendEvent(e);
+			}
+		};
+		
+		Command newStart = new Command() {
+
+			@Override
+			public void execute() {
+				log.info("do newStart");
+				MotorEvent e = new MotorEvent(this , Trigger.FORWARD);
+				control.sendEvent(e);
+			}
+		};
+		
+		config.disableEntryActionOfInitialState();
+		
 		config.configure(State.IDLE)
-				.onEntry(createAction(doIdle))
-				.onExit(createAction(move))
+				.onEntry(createAction(newStart))
 				.permit(Trigger.FORWARD,State.MOVING, createAction(sample));
 		
 		config.configure(State.MOVING)
+			.onEntry( createAction(move))
 			.onExit(createAction(stop))
-			.permit(Trigger.BLOCK, State.NAVIGATING,createAction(navigate));
+			.permit(Trigger.BLOCK, State.NAVIGATING);
+			
+		
+		config.configure(State.NAVIGATING)
+		.onEntry(createAction(navigate))
+		.permit(Trigger.RESET, State.RESETING);
+		
+		config.configure(State.RESETING)
+		.onEntry(createAction(reset))
+		.permit(Trigger.READY, State.IDLE );
+		
+		// STOP
+		config.configure(State.MOVING)
+		.onExit(createAction(stop))
+		.permit(Trigger.STOP, State.STOPING,createAction(shutdown));
+		
+		config.configure(State.IDLE)
+		.onExit(createAction(stop))
+		.permit(Trigger.STOP, State.STOPING,createAction(shutdown));
+		
+		config.configure(State.NAVIGATING)
+		.onExit(createAction(stop))
+		.permit(Trigger.STOP, State.STOPING,createAction(shutdown));
+		
+		config.configure(State.RESETING)
+		.onExit(createAction(stop))
+		.permit(Trigger.STOP, State.STOPING,createAction(shutdown));
+		
 
 		return new StateMachine<State, Trigger>(State.IDLE, config);
 	}

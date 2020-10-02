@@ -2,6 +2,7 @@ package at.projectlinz.controls;
 
 import java.util.Map;
 
+import at.projectlinz.hardware.BigMotor.MotorPos;
 import at.projectlinz.hardware.IMotor;
 import at.projectlinz.listeners.events.Event;
 import at.projectlinz.motorhandler.MotorHandler;
@@ -14,7 +15,7 @@ public class Control {
 		this.handler = motorHandler;
 	}
 
-	public Map<String, IMotor> getMotors() {
+	public Map<MotorPos, IMotor> getMotors() {
 		return this.handler.getRobot().getMotors();
 	}
 
@@ -39,7 +40,7 @@ public class Control {
 		
 	}
 
-	public void stop() {
+	public void stopMotor() {
 		handler.stopMotor();
 		
 	}
