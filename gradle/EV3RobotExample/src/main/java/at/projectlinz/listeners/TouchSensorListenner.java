@@ -28,10 +28,12 @@ public class TouchSensorListenner extends SensorListener {
 
 		int sampleSize = touth.sampleSize();
 		float[] sample = new float[sampleSize];
+		sampleValue = Float.toString( sample[0]);
 		log.info("value before sampling: " + sample[0]);
 		while (sample[0] == 0f) {
 			setSampling(true);
 			touth.fetchSample(sample, 0);
+			sampleValue = Float.toString( sample[0]);
 		}
 		setSampling(false);
 		log.info("value after sampling: " + sample[0]);
@@ -50,5 +52,11 @@ public class TouchSensorListenner extends SensorListener {
 		MotorEvent event = new MotorEvent(this,Trigger.STOP);
 		getControl().sendEvent(event);
 	}
+
+	@Override
+	public String getSampleValue() {
+		return sampleValue;
+	}
+
 
 }

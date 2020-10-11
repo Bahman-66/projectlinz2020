@@ -15,6 +15,7 @@ public abstract class SensorListener implements ISensorListener{
 	private Logger log = Logger.getLogger(SensorListener.class);
 	private Control control = null;
 	private boolean isSampling = false;
+	protected String sampleValue;
 	
 	public SensorListener(Object sensor) {
 		setSensor(sensor);

@@ -4,6 +4,8 @@ import java.util.Map;
 
 import at.projectlinz.hardware.BigMotor.MotorPos;
 import at.projectlinz.hardware.IMotor;
+import at.projectlinz.listeners.ISensorListener;
+import at.projectlinz.listeners.SensorListener.Sensor;
 import at.projectlinz.listeners.events.Event;
 import at.projectlinz.motorhandler.MotorHandler;
 
@@ -43,5 +45,9 @@ public class Control {
 	public void stopMotor() {
 		handler.stopMotor();
 		
+	}
+
+	public Map<Sensor, ISensorListener> getSensors() {
+		return handler.getListeners();
 	}
 }

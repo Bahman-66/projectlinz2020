@@ -1,5 +1,6 @@
 package at.projectlinz;
 
+
 import org.apache.log4j.Logger;
 
 import com.github.oxo42.stateless4j.StateMachine;
@@ -40,7 +41,8 @@ public class App {
 			handler.addSensorListener(Sensor.ULTRASONIC, new UltrasonicSensorListener(ulSensor));
 			handler.addSensorListener(Sensor.TOUCH, new TouchSensorListenner(touchSensor));
 			handler.registerControl();
-			handler.setStateMachine(fsm);
+			handler.start(fsm);			
+
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}

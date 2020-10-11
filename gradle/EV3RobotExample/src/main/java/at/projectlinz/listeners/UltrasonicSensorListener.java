@@ -27,10 +27,12 @@ public class UltrasonicSensorListener extends SensorListener {
 
 		float[] sample = new float[ulSensor.sampleSize()];
 		ulSensor.fetchSample(sample, 0);
+		sampleValue = Float.toString( sample[0]);
 		log.info("ulSesnsor start at " + sample[0]);
 		while (sample[0] > threshold) {
 			setSampling(true);
 			ulSensor.fetchSample(sample, 0);
+			sampleValue = Float.toString( sample[0]);
 		}
 		setSampling(false);
 		log.info("ulSesnsor stop at " + sample[0]);
@@ -53,6 +55,11 @@ public class UltrasonicSensorListener extends SensorListener {
 	private void dispatchEvent() {
 		MotorEvent event = new MotorEvent(this,Trigger.BLOCK);
 		getControl().sendEvent(event);
+	}
+
+	@Override
+	public String getSampleValue() {
+		return sampleValue;
 	}
 
 }

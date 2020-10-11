@@ -16,4 +16,6 @@ public interface ISensorListener {
 
 	void setSampling(boolean isSampling);
 
+	public String getSampleValue();
+
 }

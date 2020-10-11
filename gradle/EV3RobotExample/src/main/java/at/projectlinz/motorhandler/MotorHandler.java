@@ -3,8 +3,6 @@ package at.projectlinz.motorhandler;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import java.util.Collection;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
@@ -18,8 +16,10 @@ import at.projectlinz.hardware.Robot;
 import at.projectlinz.listeners.ISensorListener;
 import at.projectlinz.listeners.SensorListener.Sensor;
 import at.projectlinz.listeners.events.Event;
+import at.projectlinz.server.ReactServer;
 import at.projectlinz.statemachine.RobotStateMachineConfig.State;
 import at.projectlinz.statemachine.RobotStateMachineConfig.Trigger;
+import io.vertx.core.Vertx;
 
 public class MotorHandler {
 	private static Logger log = Logger.getLogger(MotorHandler.class.toString());
@@ -27,7 +27,7 @@ public class MotorHandler {
 	private Robot robot;
 	private final Control control;
 	private StateMachine<State, Trigger> fsm;
-	private ExecutorService pool = Executors.newScheduledThreadPool(2);
+	private ExecutorService pool = Executors.newScheduledThreadPool(3);
 	private Map<Sensor, ISensorListener> sensorListener = new HashMap<>();
 
 	public MotorHandler() {
@@ -45,8 +45,8 @@ public class MotorHandler {
 		}
 	}
 
-	public Collection<ISensorListener> getListeners() {
-		return sensorListener.values();
+	public Map<Sensor, ISensorListener> getListeners() {
+		return sensorListener;
 	}
 
 	public Robot getRobot() {
@@ -111,7 +111,8 @@ public class MotorHandler {
 		}
 	}
 
-	public void setStateMachine(StateMachine<State, Trigger> robotStateMachine) {
+	public void start(StateMachine<State, Trigger> robotStateMachine) {
+		startReactService();
 		this.fsm = robotStateMachine;
 		this.fsm.configuration().enableEntryActionOfInitialState();
 		this.fsm.fire(Trigger.FORWARD);
@@ -138,6 +139,17 @@ public class MotorHandler {
 		for (IMotor m : getControl().getMotors().values()) {
 			m.stop();
 		}
+	}
+
+	private void startReactService() {
+		pool.execute(new Runnable() {
+
+			@Override
+			public void run() {
+				Vertx vertx = Vertx.vertx(); // <1>
+				vertx.deployVerticle(new ReactServer(getControl())); // <2>
+			}
+		});
 	}
 
 }
